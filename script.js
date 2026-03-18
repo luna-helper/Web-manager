@@ -1,4 +1,8 @@
-// [1] 데이터 정의 및 초기화
+/**
+ * 루나월드 통합 매니저 스크립트
+ * 농사/낚시/요리 데이터 관리 및 시세 분석 로직 포함
+ */
+
 const CONFIG = {
     farm: {
         order: ["상추", "옥수수", "양배추", "무", "토마토", "딸기", "포도", "레몬", "오렌지", "파인애플", "바나나", "석류"],
@@ -18,7 +22,7 @@ const CONFIG = {
             "페페스":3
         },
         icons: {"쌈밥":"🥬","옥수수전":"🌽","전골":"🍲","무조림":"🥕","가스파초":"🥣","부야베스":"🍲","치오피노":"🥘","파에야":"🥘","세비체":"🥗","해물플래터":"🍱","데리야끼":"🍖","에스카베체":"🐟","양장피":"🥗","페페스":"🍛"},
-        bases: { // 요리 티어별 원가
+        bases: {
             t1: {"일반":51, "일품":54},
             t2: {"일반":85, "일품":90},
             t3: {"일반":100, "일품":106}
@@ -44,7 +48,7 @@ window.onload = function() {
     renderAll();
 };
 
-// [2] 설정 기능
+// UI 설정 초기화
 function loadPricesToUI() {
     document.getElementById('farm-price-common').value = globalPrices.farm["커먼"];
     document.getElementById('farm-price-uncommon').value = globalPrices.farm["언커먼"];
@@ -62,27 +66,27 @@ function loadPricesToUI() {
     document.getElementById('cook-price-t3-s').value = globalPrices.cook.t3["일품"];
 }
 
+// 가격 설정 저장
 function saveGlobalPrices() {
     globalPrices.farm = {
-        "커먼": parseInt(document.getElementById('farm-price-common').value),
-        "언커먼": parseInt(document.getElementById('farm-price-uncommon').value),
-        "레어": parseInt(document.getElementById('farm-price-rare').value)
+        "커먼": parseInt(document.getElementById('farm-price-common').value) || 0,
+        "언커먼": parseInt(document.getElementById('farm-price-uncommon').value) || 0,
+        "레어": parseInt(document.getElementById('farm-price-rare').value) || 0
     };
     globalPrices.fish = {
-        "커먼": parseInt(document.getElementById('fish-price-common').value),
-        "언커먼": parseInt(document.getElementById('fish-price-uncommon').value),
-        "레어": parseInt(document.getElementById('fish-price-rare').value)
+        "커먼": parseInt(document.getElementById('fish-price-common').value) || 0,
+        "언커먼": parseInt(document.getElementById('fish-price-uncommon').value) || 0,
+        "레어": parseInt(document.getElementById('fish-price-rare').value) || 0
     };
     globalPrices.cook = {
-        t1: {"일반": parseInt(document.getElementById('cook-price-t1-n').value), "일품": parseInt(document.getElementById('cook-price-t1-s').value)},
-        t2: {"일반": parseInt(document.getElementById('cook-price-t2-n').value), "일품": parseInt(document.getElementById('cook-price-t2-s').value)},
-        t3: {"일반": parseInt(document.getElementById('cook-price-t3-n').value), "일품": parseInt(document.getElementById('cook-price-t3-s').value)}
+        t1: {"일반": parseInt(document.getElementById('cook-price-t1-n').value) || 0, "일품": parseInt(document.getElementById('cook-price-t1-s').value) || 0},
+        t2: {"일반": parseInt(document.getElementById('cook-price-t2-n').value) || 0, "일품": parseInt(document.getElementById('cook-price-t2-s').value) || 0},
+        t3: {"일반": parseInt(document.getElementById('cook-price-t3-n').value) || 0, "일품": parseInt(document.getElementById('cook-price-t3-s').value) || 0}
     };
     localStorage.setItem('globalPrices', JSON.stringify(globalPrices));
     renderAll();
 }
 
-// [3] 공통 기능
 function switchTab(tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -134,7 +138,6 @@ function deleteItem(id) {
     }
 }
 
-// [4] 렌더링
 function renderAll() {
     ['farm', 'fish', 'cook'].forEach(type => {
         const filterCont = document.getElementById(`${type}Filters`);
@@ -172,7 +175,6 @@ function renderAll() {
     });
 }
 
-// [5] 시세 분석 (핵심 로직)
 function analyzeMarket() {
     const text = document.getElementById('marketData').value;
     const resultDiv = document.getElementById('analysisResult');
@@ -191,7 +193,6 @@ function analyzeMarket() {
 
     const now = new Date();
     resultDiv.innerHTML = myItems.map(mine => {
-        // 루나월드 표기법 변환
         let fullName = "";
         if(mine.type === 'cook') {
             fullName = `[${mine.grade}] ${mine.name}`;
@@ -199,16 +200,18 @@ function analyzeMarket() {
             fullName = `[${mine.grade}] ${mine.grade === '레어' ? '최상급 ' : (mine.grade === '언커먼' ? '신선한 ' : '')}${mine.name}`;
         }
 
-        // 1. 시장가 결정
         let defaultBase = 0;
         let target = 0;
         if(mine.type === 'cook') {
             const t = "t" + CONFIG.cook.tiers[mine.name];
             defaultBase = CONFIG.cook.bases[t][mine.grade];
             target = globalPrices.cook[t][mine.grade];
+        } else if(mine.type === 'fish') {
+            defaultBase = CONFIG.fish.bases[mine.grade];
+            target = globalPrices.fish[mine.grade];
         } else {
-            defaultBase = CONFIG.fish.type === 'fish' ? CONFIG.fish.bases[mine.grade] : (mine.grade==='레어'?10:mine.grade==='언커먼'?6:3);
-            target = globalPrices[mine.type][mine.grade];
+            defaultBase = mine.grade==='레어'?10:mine.grade==='언커먼'?6:3;
+            target = globalPrices.farm[mine.grade];
         }
         
         const currentPrice = marketPrices[fullName] || defaultBase;
@@ -221,9 +224,9 @@ function analyzeMarket() {
             decision = `⚡ 즉시 판매 (${currentPrice}원)`;
             isSell = true;
         } else if(diffHours < 24) {
-            // 낚시/요리 로직: 기한 임박 시 원가 '이상'일 때만 판매 추천
-            if(currentPrice >= defaultBase) {
-                decision = "⏳ 기한 임박 (원가 이상 판매)";
+            // 낚시/요리: 원가 이상일 때만 추천 / 농사: 무조건 추천
+            if(mine.type === 'farm' || currentPrice >= defaultBase) {
+                decision = "⏳ 기한 임박 (판매 권장)";
                 isSell = true;
             } else {
                 decision = "⚠️ 기한 임박 (원가 미달 보관)";
