@@ -1,168 +1,243 @@
-const CROP_ORDER = ["상추", "옥수수", "양배추", "무", "토마토", "딸기", "포도", "레몬", "오렌지", "파인애플", "바나나", "석류"];
-const GRADE_ORDER = { "커먼": 1, "언커먼": 2, "레어": 3 };
-const CROP_ICONS = { "상추": "🥬", "옥수수": "🌽", "양배추": "🥗", "무": "🥕", "토마토": "🍅", "딸기": "🍓", "포도": "🍇", "레몬": "🍋", "오렌지": "🍊", "파인애플": "🍍", "바나나": "🍌", "석류": "🍎" };
+// [1] 데이터 정의 및 초기화
+const CONFIG = {
+    farm: {
+        order: ["상추", "옥수수", "양배추", "무", "토마토", "딸기", "포도", "레몬", "오렌지", "파인애플", "바나나", "석류"],
+        icons: {"상추":"🥬","옥수수":"🌽","양배추":"🥗","무":"🥕","토마토":"🍅","딸기":"🍓","포도":"🍇","레몬":"🍋","오렌지":"🍊","파인애플":"🍍","바나나":"🍌","석류":"🍎"},
+        bases: {"커먼":3, "언커먼":6, "레어":10}
+    },
+    fish: {
+        order: ["뱀장어","농어","습지 개구리","문어","다랑어","숭어","강꼬치고기","연어","랍스터","아귀","철갑상어","금붕어","만타 가오리","적색퉁돔","줄돔","흰동가리","블루탱","푸른 해파리","잉어","개복치","잡어","메기","정어리"],
+        icons: {"뱀장어":"🐍","농어":"🐟","습지 개구리":"🐸","문어":"🐙","다랑어":"🐟","숭어":"🐟","강꼬치고기":"🐟","연어":"🍣","랍스터":"🦞","아귀":"🐟","철갑상어":"🦈","금붕어":"🐠","만타 가오리":"🐟","적색퉁돔":"🐟","줄돔":"🐟","흰동가리":"🐠","블루탱":"🐠","푸른 해파리":"🪼","잉어":"🎏","개복치":"🐟","잡어":"🐟","메기":"🐟","정어리":"🐟"},
+        bases: {"커먼":7, "언커먼":10, "레어":24} // 낚시 원가 기준
+    },
+    cook: {
+        order: ["쌈밥","옥수수전","전골","무조림","가스파초","부야베스","치오피노","파에야","세비체","해물플래터","데리야끼","에스카베체","양장피","페페스"],
+        tiers: {
+            "쌈밥":1, "옥수수전":1, "전골":1, "무조림":1, "가스파초":1,
+            "부야베스":2, "치오피노":2, "파에야":2, "세비체":2, "해물플래터":2, "데리야끼":2, "에스카베체":2, "양장피":2,
+            "페페스":3
+        },
+        icons: {"쌈밥":"🥬","옥수수전":"🌽","전골":"🍲","무조림":"🥕","가스파초":"🥣","부야베스":"🍲","치오피노":"🥘","파에야":"🥘","세비체":"🥗","해물플래터":"🍱","데리야끼":"🍖","에스카베체":"🐟","양장피":"🥗","페페스":"🍛"},
+        bases: { // 요리 티어별 원가
+            t1: {"일반":51, "일품":54},
+            t2: {"일반":85, "일품":90},
+            t3: {"일반":100, "일품":106}
+        }
+    }
+};
 
-let myCrops = JSON.parse(localStorage.getItem('myCrops')) || [];
-let currentFilter = "전체";
+let myItems = JSON.parse(localStorage.getItem('myItems')) || [];
+let globalPrices = JSON.parse(localStorage.getItem('globalPrices')) || {
+    farm: {"커먼":4, "언커먼":7, "레어":11},
+    fish: {"커먼":8, "언커먼":11, "레어":25},
+    cook: {
+        t1: {"일반":52, "일품":55},
+        t2: {"일반":86, "일품":91},
+        t3: {"일반":101, "일품":107}
+    }
+};
+let currentFilters = { farm: "전체", fish: "전체", cook: "전체" };
 
-function saveCrop() {
-    const name = document.getElementById('cropSelect').value;
-    const grade = document.getElementById('gradeSelect').value;
-    const dateInput = document.getElementById('expiryDate').value;
+window.onload = function() {
+    initSelects();
+    loadPricesToUI();
+    renderAll();
+};
+
+// [2] 설정 기능
+function loadPricesToUI() {
+    document.getElementById('farm-price-common').value = globalPrices.farm["커먼"];
+    document.getElementById('farm-price-uncommon').value = globalPrices.farm["언커먼"];
+    document.getElementById('farm-price-rare').value = globalPrices.farm["레어"];
     
-    if(!dateInput) return alert("날짜를 선택해 주세요.");
-    
-    const year = parseInt(dateInput.split('-')[0]);
-    if(year > 2099 || year < 2000) return alert("유효한 날짜를 입력하세요 (2000-2099).");
+    document.getElementById('fish-price-common').value = globalPrices.fish["커먼"];
+    document.getElementById('fish-price-uncommon').value = globalPrices.fish["언커먼"];
+    document.getElementById('fish-price-rare').value = globalPrices.fish["레어"];
 
-    const newCrop = {
+    document.getElementById('cook-price-t1-n').value = globalPrices.cook.t1["일반"];
+    document.getElementById('cook-price-t1-s').value = globalPrices.cook.t1["일품"];
+    document.getElementById('cook-price-t2-n').value = globalPrices.cook.t2["일반"];
+    document.getElementById('cook-price-t2-s').value = globalPrices.cook.t2["일품"];
+    document.getElementById('cook-price-t3-n').value = globalPrices.cook.t3["일반"];
+    document.getElementById('cook-price-t3-s').value = globalPrices.cook.t3["일품"];
+}
+
+function saveGlobalPrices() {
+    globalPrices.farm = {
+        "커먼": parseInt(document.getElementById('farm-price-common').value),
+        "언커먼": parseInt(document.getElementById('farm-price-uncommon').value),
+        "레어": parseInt(document.getElementById('farm-price-rare').value)
+    };
+    globalPrices.fish = {
+        "커먼": parseInt(document.getElementById('fish-price-common').value),
+        "언커먼": parseInt(document.getElementById('fish-price-uncommon').value),
+        "레어": parseInt(document.getElementById('fish-price-rare').value)
+    };
+    globalPrices.cook = {
+        t1: {"일반": parseInt(document.getElementById('cook-price-t1-n').value), "일품": parseInt(document.getElementById('cook-price-t1-s').value)},
+        t2: {"일반": parseInt(document.getElementById('cook-price-t2-n').value), "일품": parseInt(document.getElementById('cook-price-t2-s').value)},
+        t3: {"일반": parseInt(document.getElementById('cook-price-t3-n').value), "일품": parseInt(document.getElementById('cook-price-t3-s').value)}
+    };
+    localStorage.setItem('globalPrices', JSON.stringify(globalPrices));
+    renderAll();
+}
+
+// [3] 공통 기능
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById(`${tabName}-content`).classList.add('active');
+}
+
+function initSelects() {
+    ['farm', 'fish', 'cook'].forEach(type => {
+        const select = document.getElementById(`${type}Select`);
+        select.innerHTML = CONFIG[type].order.map(name => `<option value="${name}">${CONFIG[type].icons[name] || ''} ${name}</option>`).join('');
+    });
+}
+
+function saveItem(type) {
+    const name = document.getElementById(`${type}Select`).value;
+    const grade = document.getElementById(`${type}Grade`).value;
+    const dateInput = document.getElementById(`${type}Expiry`).value;
+    if(!dateInput) return alert("유통기한을 선택하세요.");
+
+    myItems.push({
         id: Date.now(),
+        type: type,
         name: name,
         grade: grade,
         expiry: `${dateInput}-09:00`,
-        icon: CROP_ICONS[name]
-    };
-
-    myCrops.push(newCrop);
+        icon: CONFIG[type].icons[name]
+    });
     sortAndSave();
 }
 
 function sortAndSave() {
-    myCrops.sort((a, b) => {
-        const orderA = CROP_ORDER.indexOf(a.name);
-        const orderB = CROP_ORDER.indexOf(b.name);
-        if (orderA !== orderB) return orderA - orderB;
-        const dateA = new Date(a.expiry.split('-09:00')[0]);
-        const dateB = new Date(b.expiry.split('-09:00')[0]);
-        if (dateA - dateB !== 0) return dateA - dateB;
-        return GRADE_ORDER[a.grade] - GRADE_ORDER[b.grade];
+    myItems.sort((a, b) => {
+        if (a.type !== b.type) return a.type.localeCompare(b.type);
+        const order = CONFIG[a.type].order;
+        const idxA = order.indexOf(a.name);
+        const idxB = order.indexOf(b.name);
+        if (idxA !== idxB) return idxA - idxB;
+        return new Date(a.expiry.split('-09:00')[0]) - new Date(b.expiry.split('-09:00')[0]);
     });
-    localStorage.setItem('myCrops', JSON.stringify(myCrops));
+    localStorage.setItem('myItems', JSON.stringify(myItems));
     renderAll();
 }
 
-function deleteCrop(id) {
-    if(!confirm("삭제하시겠습니까?")) return;
-    myCrops = myCrops.filter(c => c.id !== id);
-    sortAndSave();
-}
-
-function renderFilters() {
-    const filterContainer = document.getElementById('categoryFilters');
-    const counts = { "전체": myCrops.length };
-    CROP_ORDER.forEach(name => {
-        counts[name] = myCrops.filter(c => c.name === name).length;
-    });
-
-    filterContainer.innerHTML = ["전체", ...CROP_ORDER].map(name => `
-        <button class="filter-btn ${currentFilter === name ? 'active' : ''}" onclick="setFilter('${name}')">
-            ${name === "전체" ? "전체" : CROP_ICONS[name] + " " + name}
-            <span>${counts[name]}</span>
-        </button>
-    `).join('');
-}
-
-function setFilter(name) {
-    currentFilter = name;
-    renderAll();
-}
-
-function renderMyCrops() {
-    const container = document.getElementById('myCropsGrid');
-    const now = new Date();
-    const filteredCrops = currentFilter === "전체" ? myCrops : myCrops.filter(c => c.name === currentFilter);
-
-    if (filteredCrops.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #555; padding: 40px;">해당하는 작물이 없습니다.</p>`;
-        return;
+function deleteItem(id) {
+    if(confirm("삭제하시겠습니까?")) {
+        myItems = myItems.filter(i => i.id !== id);
+        sortAndSave();
     }
+}
 
-    container.innerHTML = filteredCrops.map(c => {
-        const expiryDate = new Date(c.expiry.split('-09:00')[0] + 'T09:00:00');
-        const isExpired = now > expiryDate;
-        const gradeClass = c.grade === '레어' ? 'rare' : (c.grade === '언커먼' ? 'uncommon' : 'common');
-        
-        return `
-            <div class="crop-card ${isExpired ? 'expired' : gradeClass}">
-                <button class="delete-btn" onclick="deleteCrop(${c.id})">×</button>
-                <span class="crop-icon">${c.icon}</span>
-                <div style="text-align:center">
-                    <strong style="display:block; margin-bottom:5px;">${c.name}</strong>
-                    <span style="font-size:0.75rem; opacity:0.8;">${c.grade} 등급</span>
-                    <div style="font-size:0.75rem; color:${isExpired ? 'var(--danger)' : 'var(--accent)'}; font-weight:bold; margin-top:10px;">
-                        ${c.expiry.split('-09:00')[0]}
+// [4] 렌더링
+function renderAll() {
+    ['farm', 'fish', 'cook'].forEach(type => {
+        const filterCont = document.getElementById(`${type}Filters`);
+        filterCont.innerHTML = ["전체", ...CONFIG[type].order].map(name => `
+            <button class="filter-btn ${currentFilters[type] === name ? 'active' : ''}" 
+            onclick="currentFilters['${type}']='${name}'; renderAll();">${name}</button>
+        `).join('');
+
+        const grid = document.getElementById(`${type}Grid`);
+        const now = new Date();
+        const filtered = currentFilters[type] === "전체" ? myItems.filter(i => i.type === type) : myItems.filter(i => i.type === type && i.name === currentFilters[type]);
+
+        grid.innerHTML = filtered.map(item => {
+            const isExpired = now > new Date(item.expiry.split('-09:00')[0] + 'T09:00:00');
+            let target = 0;
+            if(type === 'cook') {
+                const t = "t" + CONFIG.cook.tiers[item.name];
+                target = globalPrices.cook[t][item.grade];
+            } else {
+                target = globalPrices[type][item.grade];
+            }
+
+            return `
+                <div class="crop-card ${isExpired ? 'expired' : item.grade}">
+                    <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
+                    <span class="crop-icon">${item.icon}</span>
+                    <div style="text-align:center">
+                        <b>${item.name}</b>
+                        <div style="font-size:0.7rem; color:var(--text-dim);">${item.grade} | 목표 ${target}원</div>
+                        <div style="font-size:0.7rem; font-weight:bold; margin-top:5px;">${item.expiry.split('-09:00')[0]}</div>
                     </div>
                 </div>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+    });
 }
 
+// [5] 시세 분석 (핵심 로직)
 function analyzeMarket() {
     const text = document.getElementById('marketData').value;
     const resultDiv = document.getElementById('analysisResult');
-    if(!text || myCrops.length === 0) return alert("시세 데이터와 등록된 작물이 필요합니다.");
+    if(!text) return alert("시세 데이터를 입력하세요.");
 
     const marketPrices = {};
-    const lines = text.split('\n');
-    let currentItemName = "";
-
-    lines.forEach(line => {
-        const trimmed = line.trim();
-        // 등급과 이름이 포함된 줄 추출 (예: - [레어] 최상급 포도)
-        if(trimmed.includes('[') && trimmed.includes(']')) {
-            currentItemName = trimmed.replace('- ', '').trim();
-        }
-        // 가격 추출
-        if(trimmed.includes('현재 변동가')) {
-            const price = parseInt(trimmed.split(':')[1].replace(/[^0-9]/g, ''));
-            if(!isNaN(price)) marketPrices[currentItemName] = price;
+    let lastFound = "";
+    text.split('\n').forEach(line => {
+        const t = line.trim();
+        if(t.includes('[') && t.includes(']')) lastFound = t.replace('- ', '').trim();
+        if(t.includes('현재 변동가')) {
+            const p = parseInt(t.split(':')[1].replace(/[^0-9]/g, ''));
+            if(!isNaN(p)) marketPrices[lastFound] = p;
         }
     });
 
     const now = new Date();
-    resultDiv.innerHTML = myCrops.map(mine => {
-        // 루나월드 표기법에 맞춘 전체 이름 생성
-        const fullName = `[${mine.grade}] ${mine.grade === '레어' ? '최상급 ' : (mine.grade === '언커먼' ? '신선한 ' : '')}${mine.name}`;
+    resultDiv.innerHTML = myItems.map(mine => {
+        // 루나월드 표기법 변환
+        let fullName = "";
+        if(mine.type === 'cook') {
+            fullName = `[${mine.grade}] ${mine.name}`;
+        } else {
+            fullName = `[${mine.grade}] ${mine.grade === '레어' ? '최상급 ' : (mine.grade === '언커먼' ? '신선한 ' : '')}${mine.name}`;
+        }
+
+        // 1. 시장가 결정
+        let defaultBase = 0;
+        let target = 0;
+        if(mine.type === 'cook') {
+            const t = "t" + CONFIG.cook.tiers[mine.name];
+            defaultBase = CONFIG.cook.bases[t][mine.grade];
+            target = globalPrices.cook[t][mine.grade];
+        } else {
+            defaultBase = CONFIG.fish.type === 'fish' ? CONFIG.fish.bases[mine.grade] : (mine.grade==='레어'?10:mine.grade==='언커먼'?6:3);
+            target = globalPrices[mine.type][mine.grade];
+        }
         
-        const basePrice = mine.grade === '레어' ? 10 : (mine.grade === '언커먼' ? 6 : 3);
-        const maxPrice = mine.grade === '레어' ? 11 : (mine.grade === '언커먼' ? 7 : 4);
-        let currentPrice = marketPrices[fullName] || basePrice;
+        const currentPrice = marketPrices[fullName] || defaultBase;
+        const diffHours = (new Date(mine.expiry.split('-09:00')[0] + 'T09:00:00') - now) / 3600000;
 
-        const expiryFull = new Date(mine.expiry.split('-09:00')[0] + 'T09:00:00');
-        const diffHours = (expiryFull - now) / (1000 * 60 * 60);
+        let decision = "보관"; let isSell = false;
 
-        let decision = "보관";
-        let isSell = false;
-
-        if(diffHours < 0) decision = "❌ 판매 불가 (만료)";
-        else if(currentPrice >= maxPrice) { decision = "⚡ 즉시 판매 (최고가)"; isSell = true; }
-        else if(diffHours < 24 && currentPrice >= basePrice) { decision = "⏳ 판매 추천 (기한 임박)"; isSell = true; }
-
-        // 등급별 클래스 (텍스트 색상용)
-        const gradeClass = mine.grade === '레어' ? 'rare' : (mine.grade === '언커먼' ? 'uncommon' : 'common');
+        if(diffHours < 0) decision = "❌ 만료";
+        else if(currentPrice >= target) {
+            decision = `⚡ 즉시 판매 (${currentPrice}원)`;
+            isSell = true;
+        } else if(diffHours < 24) {
+            // 낚시/요리 로직: 기한 임박 시 원가 '이상'일 때만 판매 추천
+            if(currentPrice >= defaultBase) {
+                decision = "⏳ 기한 임박 (원가 이상 판매)";
+                isSell = true;
+            } else {
+                decision = "⚠️ 기한 임박 (원가 미달 보관)";
+            }
+        }
 
         return `
             <div class="result-item ${isSell ? 'sell' : ''}">
                 <div class="res-info">
-                    <div>
-                        <span style="font-size:1.1rem;">${mine.icon}</span> 
-                        <b style="margin-left:5px;">${mine.name}</b>
-                        <span class="res-grade ${gradeClass}" style="margin-left:8px;">[${mine.grade}]</span>
-                    </div>
-                    <span class="res-expiry">기한: ${mine.expiry.split('-09:00')[0]} (${diffHours > 0 ? Math.floor(diffHours) + '시간 남음' : '만료'})</span>
+                    <b>${mine.icon} ${mine.name} [${mine.grade}]</b>
+                    <div class="res-expiry">시장: ${currentPrice} / 목표: ${target} / 원가: ${defaultBase}</div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-size:1.1rem; font-weight:bold; color:var(--rare);">${currentPrice}원</div>
-                    <div style="font-weight:bold; font-size:0.9rem; color:${isSell ? 'var(--success)' : (diffHours < 0 ? 'var(--danger)' : 'white')}">${decision}</div>
-                </div>
+                <div style="font-weight:bold; color:${isSell?'var(--success)':'white'}">${decision}</div>
             </div>
         `;
     }).join('');
 }
-
-function renderAll() {
-    renderFilters();
-    renderMyCrops();
-}
-renderAll();
