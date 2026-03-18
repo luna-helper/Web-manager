@@ -3,65 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>농작물 판매 매니저 v 1.0.1 </title>
+    <title>루나월드 통합 매니저 v 1.0.1 release</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>👨‍🌾 농작물 판매 매니저 v 1.0.1 </h1>
-        <p class="subtitle">실시간 시세 분석 및 유통기한 관리 시스템</p>
+        <h1>🌙 루나월드 통합 매니저 v 1.0.1 </h1>
+        <div class="main-tabs">
+            <button class="tab-btn active" onclick="switchTab('farm')">👨‍🌾 농사</button>
+            <button class="tab-btn" onclick="switchTab('fish')">🎣 낚시</button>
+            <button class="tab-btn" onclick="switchTab('cook')">🍳 요리</button>
+        </div>
     </header>
 
-    <div class="section">
-        <div class="section-header center-header">
-            <h2 class="main-setting-title">나의 농작물 설정</h2>
+    <div id="farm-content" class="tab-content active">
+        <div class="section price-setting-section">
+            <div class="section-header"><h3>💰 농작물 목표가 설정</h3></div>
+            <div class="price-input-grid">
+                <div class="input-field"><label>일반(커먼)</label><input type="number" id="farm-price-common" onchange="saveGlobalPrices()"></div>
+                <div class="input-field"><label>은별(언커먼)</label><input type="number" id="farm-price-uncommon" onchange="saveGlobalPrices()"></div>
+                <div class="input-field"><label>금별(레어)</label><input type="number" id="farm-price-rare" onchange="saveGlobalPrices()"></div>
+            </div>
         </div>
-        
-        <div class="input-panel">
-            <div class="input-field">
-                <label>작물 종류</label>
-                <select id="cropSelect">
-                    <option value="상추">🥬 상추</option><option value="옥수수">🌽 옥수수</option>
-                    <option value="양배추">🥗 양배추</option><option value="무">🥕 무</option>
-                    <option value="토마토">🍅 토마토</option><option value="딸기">🍓 딸기</option>
-                    <option value="포도">🍇 포도</option><option value="레몬">🍋 레몬</option>
-                    <option value="오렌지">🍊 오렌지</option><option value="파인애플">🍍 파인애플</option>
-                    <option value="바나나">🍌 바나나</option><option value="석류">🍎 석류</option>
-                </select>
+        <div class="section">
+            <div class="section-header"><h3>🌱 농작물 등록</h3></div>
+            <div class="input-panel">
+                <div class="input-field">
+                    <label>작물 종류</label>
+                    <select id="farmSelect"></select>
+                </div>
+                <div class="input-field">
+                    <label>등급</label>
+                    <select id="farmGrade">
+                        <option value="커먼">일반 (커먼)</option>
+                        <option value="언커먼">은별 (언커먼)</option>
+                        <option value="레어">금별 (레어)</option>
+                    </select>
+                </div>
+                <div class="input-field"><label>유통기한</label><input type="date" id="farmExpiry"></div>
+                <button class="btn-primary" onclick="saveItem('farm')">등록</button>
             </div>
-            <div class="input-field">
-                <label>아이템 등급</label>
-                <select id="gradeSelect">
-                    <option value="커먼">일반 (커먼)</option>
-                    <option value="언커먼">은별 (언커먼)</option>
-                    <option value="레어">금별 (레어)</option>
-                </select>
-            </div>
-            <div class="input-field">
-                <label>유통기한 (Max 2099년)</label>
-                <input type="date" id="expiryDate" min="2000-01-01" max="2099-12-31">
-            </div>
-            <button class="btn-primary" onclick="saveCrop()">등록하기</button>
+            <div id="farmFilters" class="category-grid"></div>
+            <div id="farmGrid" class="item-grid"></div>
         </div>
+    </div>
 
-        <div id="categoryFilters" class="category-grid"></div>
-        <div id="myCropsGrid" class="crop-grid"></div>
+    <div id="fish-content" class="tab-content">
+        <div class="section price-setting-section">
+            <div class="section-header"><h3>💰 수산물 목표가 설정</h3></div>
+            <div class="price-input-grid">
+                <div class="input-field"><label>일반(커먼)</label><input type="number" id="fish-price-common" onchange="saveGlobalPrices()"></div>
+                <div class="input-field"><label>은별(언커먼)</label><input type="number" id="fish-price-uncommon" onchange="saveGlobalPrices()"></div>
+                <div class="input-field"><label>금별(레어)</label><input type="number" id="fish-price-rare" onchange="saveGlobalPrices()"></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-header"><h3>🎣 수산물 등록</h3></div>
+            <div class="input-panel">
+                <div class="input-field">
+                    <label>물고기 종류</label>
+                    <select id="fishSelect"></select>
+                </div>
+                <div class="input-field">
+                    <label>등급</label>
+                    <select id="fishGrade">
+                        <option value="커먼">일반 (커먼)</option>
+                        <option value="언커먼">은별 (언커먼)</option>
+                        <option value="레어">금별 (레어)</option>
+                    </select>
+                </div>
+                <div class="input-field"><label>유통기한</label><input type="date" id="fishExpiry"></div>
+                <button class="btn-primary" onclick="saveItem('fish')">등록</button>
+            </div>
+            <div id="fishFilters" class="category-grid"></div>
+            <div id="fishGrid" class="item-grid"></div>
+        </div>
+    </div>
+
+    <div id="cook-content" class="tab-content">
+        <div class="section price-setting-section">
+            <div class="section-header"><h3>💰 요리 티어별 목표가 설정</h3></div>
+            <div class="price-input-grid cook-price-grid">
+                <div class="tier-group"><span>1티어</span><input type="number" id="cook-price-t1-n" onchange="saveGlobalPrices()"><input type="number" id="cook-price-t1-s" onchange="saveGlobalPrices()"></div>
+                <div class="tier-group"><span>2티어</span><input type="number" id="cook-price-t2-n" onchange="saveGlobalPrices()"><input type="number" id="cook-price-t2-s" onchange="saveGlobalPrices()"></div>
+                <div class="tier-group"><span>3티어</span><input type="number" id="cook-price-t3-n" onchange="saveGlobalPrices()"><input type="number" id="cook-price-t3-s" onchange="saveGlobalPrices()"></div>
+            </div>
+            <p class="guide-text" style="text-align:center">좌측: 일반 / 우측: 일품 가격</p>
+        </div>
+        <div class="section">
+            <div class="section-header"><h3>🍳 요리 등록</h3></div>
+            <div class="input-panel">
+                <div class="input-field">
+                    <label>요리 이름</label>
+                    <select id="cookSelect"></select>
+                </div>
+                <div class="input-field">
+                    <label>등급</label>
+                    <select id="cookGrade">
+                        <option value="일반">일반</option>
+                        <option value="일품">일품</option>
+                    </select>
+                </div>
+                <div class="input-field"><label>유통기한</label><input type="date" id="cookExpiry"></div>
+                <button class="btn-primary" onclick="saveItem('cook')">등록</button>
+            </div>
+            <div id="cookFilters" class="category-grid"></div>
+            <div id="cookGrid" class="item-grid"></div>
+        </div>
     </div>
 
     <div class="section">
         <div class="section-header"><h2>📈 실시간 시세 입력</h2></div>
         <div class="market-panel">
-            <p class="guide-text">※ 루나월드 디스코드의 상승/하락 아이템 변동 가격표를 모두 복사하여 붙여넣으세요.</p>
-            <textarea id="marketData" placeholder="[입력 예시]&#10;# 농작물 상점의 변동 가격이 갱신되었습니다.&#10;📈 상승 아이템&#10;- [레어] 최상급 포도&#10;  - 현재 변동가: 11&#10;- [언커먼] 신선한 딸기&#10;  - 현재 변동가: 7&#10;&#10;📉 하락 아이템&#10;- [레어] 최상급 딸기&#10;  - 현재 변동가: 9"></textarea>
-            <button class="btn-analyze" onclick="analyzeMarket()">🚀 시세 분석 및 판매 추천 실행</button>
+            <textarea id="marketData" placeholder="디스코드 시세를 복사해 넣으세요."></textarea>
+            <button class="btn-analyze" onclick="analyzeMarket()">🚀 통합 시세 분석 실행</button>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-header"><h2>💰 판매 추천 결과</h2></div>
-        <div id="analysisResult" class="result-placeholder">시세를 분석하면 추천 리스트가 나타납니다.</div>
+        <div class="section-header"><h2>💰 분석 결과</h2></div>
+        <div id="analysisResult" class="result-placeholder">분석 버튼을 누르세요.</div>
     </div>
 </div>
 
