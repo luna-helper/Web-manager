@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>루나월드 통합 매니저 v 1.0.1 release </title>
+    <title>루나월드 통합 판매 v 1.0.1 release</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>🌙 루나월드 통합 매니저 v 1.0.1 </h1>
+        <h1>🌙 루나월드 통합 판매 사이트 </h1>
         <div class="main-tabs">
             <button class="tab-btn active" onclick="switchTab('farm')">👨‍🌾 농사</button>
             <button class="tab-btn" onclick="switchTab('fish')">🎣 낚시</button>
@@ -22,11 +23,8 @@
         <div class="section">
             <div class="section-header"><h3>🌱 농작물 등록</h3></div>
             <div class="input-panel">
-                <div class="input-field">
-                    <label>작물 종류</label>
-                    <select id="farmSelect"></select>
-                </div>
-                <div class="input-field">
+                <div class="input-group"><label>작물 종류</label><select id="farmSelect"></select></div>
+                <div class="input-group">
                     <label>등급</label>
                     <select id="farmGrade">
                         <option value="커먼">일반 (커먼)</option>
@@ -34,18 +32,19 @@
                         <option value="레어">금별 (레어)</option>
                     </select>
                 </div>
-                <div class="input-field"><label>유통기한</label><input type="date" id="farmExpiry"></div>
-                <button class="btn-primary" onclick="saveItem('farm')">등록</button>
+                <div class="input-group"><label>유통기한</label><input type="date" id="farmExpiry"></div>
+                <button class="btn-primary" onclick="saveItem('farm')">등록하기</button>
             </div>
-            <div id="farmFilters" class="category-grid"></div>
-            <div id="farmGrid" class="item-grid"></div>
+            <div id="farmFilters" class="filter-container"></div>
+            <div class="scroll-container"><div id="farmGrid" class="item-grid"></div></div>
         </div>
+        
         <div class="section price-setting-section">
-            <div class="section-header"><h3>💰 농작물 목표 판매가 설정</h3></div>
+            <div class="section-header"><h3>💰 농작물 목표가 설정</h3></div>
             <div class="price-input-grid">
-                <div class="input-field"><label>일반(커먼)</label><input type="number" id="farm-price-common" onchange="saveGlobalPrices()"></div>
-                <div class="input-field"><label>은별(언커먼)</label><input type="number" id="farm-price-uncommon" onchange="saveGlobalPrices()"></div>
-                <div class="input-field"><label>금별(레어)</label><input type="number" id="farm-price-rare" onchange="saveGlobalPrices()"></div>
+                <div class="price-field"><label>일반</label><input type="number" id="farm-price-common" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                <div class="price-field"><label>은별</label><input type="number" id="farm-price-uncommon" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                <div class="price-field"><label>금별</label><input type="number" id="farm-price-rare" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
             </div>
         </div>
     </div>
@@ -54,11 +53,8 @@
         <div class="section">
             <div class="section-header"><h3>🎣 수산물 등록</h3></div>
             <div class="input-panel">
-                <div class="input-field">
-                    <label>물고기 종류</label>
-                    <select id="fishSelect"></select>
-                </div>
-                <div class="input-field">
+                <div class="input-group"><label>물고기 종류</label><select id="fishSelect"></select></div>
+                <div class="input-group">
                     <label>등급</label>
                     <select id="fishGrade">
                         <option value="커먼">일반 (커먼)</option>
@@ -66,18 +62,19 @@
                         <option value="레어">금별 (레어)</option>
                     </select>
                 </div>
-                <div class="input-field"><label>유통기한</label><input type="date" id="fishExpiry"></div>
-                <button class="btn-primary" onclick="saveItem('fish')">등록</button>
+                <div class="input-group"><label>유통기한</label><input type="date" id="fishExpiry"></div>
+                <button class="btn-primary" onclick="saveItem('fish')">등록하기</button>
             </div>
-            <div id="fishFilters" class="category-grid"></div>
-            <div id="fishGrid" class="item-grid"></div>
+            <div id="fishFilters" class="filter-container"></div>
+            <div class="scroll-container"><div id="fishGrid" class="item-grid"></div></div>
         </div>
+        
         <div class="section price-setting-section">
-            <div class="section-header"><h3>💰 수산물 목표 판매가 설정</h3></div>
+            <div class="section-header"><h3>💰 수산물 목표가 설정</h3></div>
             <div class="price-input-grid">
-                <div class="input-field"><label>일반(커먼)</label><input type="number" id="fish-price-common" onchange="saveGlobalPrices()"></div>
-                <div class="input-field"><label>은별(언커먼)</label><input type="number" id="fish-price-uncommon" onchange="saveGlobalPrices()"></div>
-                <div class="input-field"><label>금별(레어)</label><input type="number" id="fish-price-rare" onchange="saveGlobalPrices()"></div>
+                <div class="price-field"><label>일반</label><input type="number" id="fish-price-common" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                <div class="price-field"><label>은별</label><input type="number" id="fish-price-uncommon" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                <div class="price-field"><label>금별</label><input type="number" id="fish-price-rare" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
             </div>
         </div>
     </div>
@@ -86,45 +83,67 @@
         <div class="section">
             <div class="section-header"><h3>🍳 요리 등록</h3></div>
             <div class="input-panel">
-                <div class="input-field">
-                    <label>요리 이름</label>
-                    <select id="cookSelect"></select>
-                </div>
-                <div class="input-field">
+                <div class="input-group"><label>요리 이름</label><select id="cookSelect"></select></div>
+                <div class="input-group">
                     <label>등급</label>
                     <select id="cookGrade">
                         <option value="일반">일반</option>
                         <option value="일품">일품</option>
                     </select>
                 </div>
-                <div class="input-field"><label>유통기한</label><input type="date" id="cookExpiry"></div>
-                <button class="btn-primary" onclick="saveItem('cook')">등록</button>
+                <div class="input-group"><label>유통기한</label><input type="date" id="cookExpiry"></div>
+                <button class="btn-primary" onclick="saveItem('cook')">등록하기</button>
             </div>
-            <div id="cookFilters" class="category-grid"></div>
-            <div id="cookGrid" class="item-grid"></div>
+            <div id="cookFilters" class="filter-container"></div>
+            <div class="scroll-container"><div id="cookGrid" class="item-grid"></div></div>
         </div>
+        
         <div class="section price-setting-section">
             <div class="section-header"><h3>💰 요리 티어별 목표가 설정</h3></div>
-            <div class="price-input-grid cook-price-grid">
-                <div class="tier-group"><span>1티어 (일반/일품)</span><div class="flex-row"><input type="number" id="cook-price-t1-n" onchange="saveGlobalPrices()"><input type="number" id="cook-price-t1-s" onchange="saveGlobalPrices()"></div></div>
-                <div class="tier-group"><span>2티어 (일반/일품)</span><div class="flex-row"><input type="number" id="cook-price-t2-n" onchange="saveGlobalPrices()"><input type="number" id="cook-price-t2-s" onchange="saveGlobalPrices()"></div></div>
-                <div class="tier-group"><span>3티어 (일반/일품)</span><div class="flex-row"><input type="number" id="cook-price-t3-n" onchange="saveGlobalPrices()"><input type="number" id="cook-price-t3-s" onchange="saveGlobalPrices()"></div></div>
+            <div class="cook-price-layout">
+                <div class="tier-card">
+                    <h4>1티어</h4>
+                    <div class="tier-inputs">
+                        <div class="price-field"><label>일반</label><input type="number" id="cook-price-t1-n" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                        <div class="price-field"><label>일품</label><input type="number" id="cook-price-t1-s" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                    </div>
+                </div>
+                <div class="tier-card">
+                    <h4>2티어</h4>
+                    <div class="tier-inputs">
+                        <div class="price-field"><label>일반</label><input type="number" id="cook-price-t2-n" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                        <div class="price-field"><label>일품</label><input type="number" id="cook-price-t2-s" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                    </div>
+                </div>
+                <div class="tier-card">
+                    <h4>3티어</h4>
+                    <div class="tier-inputs">
+                        <div class="price-field"><label>일반</label><input type="number" id="cook-price-t3-n" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                        <div class="price-field"><label>일품</label><input type="number" id="cook-price-t3-s" oninput="limitDigits(this)" onchange="saveGlobalPrices()"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="section">
-        <div class="section-header"><h2>📈 실시간 시세 입력</h2></div>
-        <div class="market-panel">
-            <textarea id="marketData" placeholder="디스코드 시세를 복사해 넣으세요."></textarea>
-            <button class="btn-analyze" onclick="analyzeMarket()">🚀 통합 시세 분석 실행</button>
+    <div class="section market-analysis-section">
+        <div class="section-header"><h2>📊 실시간 시세 통합 분석</h2></div>
+        <div class="market-input-container">
+            <div class="market-box"><label>🌱 농사 시세</label><textarea id="marketDataFarm" class="split-textarea" placeholder="시세 데이터 붙여넣기..."></textarea></div>
+            <div class="market-box"><label>🎣 낚시 시세</label><textarea id="marketDataFish" class="split-textarea" placeholder="시세 데이터 붙여넣기..."></textarea></div>
+            <div class="market-box"><label>🍳 요리 시세</label><textarea id="marketDataCook" class="split-textarea" placeholder="시세 데이터 붙여넣기..."></textarea></div>
         </div>
+        <button class="btn-analyze-full" onclick="analyzeMarketFull()">🚀 전 카테고리 시세 분석 실행</button>
     </div>
 
     <div class="section">
         <div class="section-header"><h2>💰 분석 결과</h2></div>
-        <div id="analysisResult" class="result-placeholder">분석 버튼을 누르세요.</div>
+        <div id="analysisResult" class="result-scroll-area"><div class="result-placeholder">시세 분석을 대기 중입니다.</div></div>
     </div>
+
+    <footer>
+        <p>제작자: <b>Sacur(고구마)</b> | Version: <span class="version-tag">v 1.0.2 release</span></p>
+    </footer>
 </div>
 
 <script src="script.js"></script>
