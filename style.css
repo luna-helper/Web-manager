@@ -22,22 +22,22 @@ header { text-align: center; margin-bottom: 25px; }
 .price-setting-section { border: 1px solid var(--accent); background: linear-gradient(145deg, #1e2235, #1a1d2e); }
 
 .price-input-grid, .input-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; background: var(--panel-bg); padding: 15px; border-radius: 12px; align-items: flex-end; }
-.cook-price-grid { grid-template-columns: repeat(3, 1fr); }
-.tier-group { display: flex; flex-direction: column; gap: 5px; text-align: center; }
-.tier-group span { font-size: 0.8rem; color: var(--accent); font-weight: bold; }
+.cook-price-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.tier-group { display: flex; flex-direction: column; gap: 5px; }
+.tier-group span { font-size: 0.8rem; color: var(--accent); font-weight: bold; text-align: center; }
+.flex-row { display: flex; gap: 5px; }
 
 .input-field { display: flex; flex-direction: column; gap: 6px; }
 .input-field label { font-size: 0.8rem; color: var(--text-dim); font-weight: bold; }
 
 select, input, textarea { background: var(--input-bg); border: 1px solid #3d4150; color: white; padding: 10px; border-radius: 8px; outline: none; width: 100%; box-sizing: border-box; }
 input[type="number"] { text-align: center; font-weight: bold; color: var(--rare); }
-textarea { height: 150px; }
 
 .category-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 15px 0; padding-bottom: 10px; border-bottom: 1px solid #333; }
 .filter-btn { background: #2f344d; color: var(--text-dim); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
 .filter-btn.active { background: var(--accent); color: white; }
 
-.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 10px; }
 .crop-card { background: var(--panel-bg); padding: 15px; border-radius: 10px; position: relative; border-bottom: 4px solid #444; }
 .crop-card.rare, .crop-card.일품 { border-bottom-color: var(--rare); }
 .crop-card.uncommon { border-bottom-color: var(--uncommon); }
@@ -51,6 +51,4 @@ textarea { height: 150px; }
 
 .result-item { background: var(--panel-bg); padding: 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #444; }
 .result-item.sell { border-left-color: var(--success); background: #1a2e25; }
-.res-info b { font-size: 0.95rem; }
-.res-expiry { font-size: 0.75rem; color: var(--text-dim); }
 .result-placeholder { text-align: center; color: var(--text-dim); padding: 30px; }
