@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>농작물 판매 매니저 v 1.0.1 </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>👨‍🌾 농작물 판매 매니저 v 1.0.1 </h1>
+        <p class="subtitle">실시간 시세 분석 및 유통기한 관리 시스템</p>
+    </header>
+
+    <div class="section">
+        <div class="section-header center-header">
+            <h2 class="main-setting-title">나의 농작물 설정</h2>
+        </div>
+        
+        <div class="input-panel">
+            <div class="input-field">
+                <label>작물 종류</label>
+                <select id="cropSelect">
+                    <option value="상추">🥬 상추</option><option value="옥수수">🌽 옥수수</option>
+                    <option value="양배추">🥗 양배추</option><option value="무">🥕 무</option>
+                    <option value="토마토">🍅 토마토</option><option value="딸기">🍓 딸기</option>
+                    <option value="포도">🍇 포도</option><option value="레몬">🍋 레몬</option>
+                    <option value="오렌지">🍊 오렌지</option><option value="파인애플">🍍 파인애플</option>
+                    <option value="바나나">🍌 바나나</option><option value="석류">🍎 석류</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label>아이템 등급</label>
+                <select id="gradeSelect">
+                    <option value="커먼">일반 (커먼)</option>
+                    <option value="언커먼">은별 (언커먼)</option>
+                    <option value="레어">금별 (레어)</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label>유통기한 (Max 2099년)</label>
+                <input type="date" id="expiryDate" min="2000-01-01" max="2099-12-31">
+            </div>
+            <button class="btn-primary" onclick="saveCrop()">등록하기</button>
+        </div>
+
+        <div id="categoryFilters" class="category-grid"></div>
+        <div id="myCropsGrid" class="crop-grid"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-header"><h2>📈 실시간 시세 입력</h2></div>
+        <div class="market-panel">
+            <p class="guide-text">※ 루나월드 디스코드의 상승/하락 아이템 변동 가격표를 모두 복사하여 붙여넣으세요.</p>
+            <textarea id="marketData" placeholder="[입력 예시]&#10;# 농작물 상점의 변동 가격이 갱신되었습니다.&#10;📈 상승 아이템&#10;- [레어] 최상급 포도&#10;  - 현재 변동가: 11&#10;- [언커먼] 신선한 딸기&#10;  - 현재 변동가: 7&#10;&#10;📉 하락 아이템&#10;- [레어] 최상급 딸기&#10;  - 현재 변동가: 9"></textarea>
+            <button class="btn-analyze" onclick="analyzeMarket()">🚀 시세 분석 및 판매 추천 실행</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header"><h2>💰 판매 추천 결과</h2></div>
+        <div id="analysisResult" class="result-placeholder">시세를 분석하면 추천 리스트가 나타납니다.</div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
