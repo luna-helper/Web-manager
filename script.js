@@ -1,4 +1,3 @@
-// 전역 변수
 let activeTab = 'farm';
 const CONFIG = {
     farm: { order: ["상추", "옥수수", "양배추", "무", "토마토", "딸기", "포도", "레몬", "오렌지", "파인애플", "바나나", "석류"], icons: {"상추":"🥬","옥수수":"🌽","양배추":"🥗","무":"🥕","토마토":"🍅","딸기":"🍓","포도":"🍇","레몬":"🍋","오렌지":"🍊","파인애플":"🍍","바나나":"🍌","석류":"🍎"} },
@@ -12,10 +11,7 @@ let currentFilters = { farm: "전체", fish: "전체", cook: "전체" };
 
 window.onload = function() { initSelects(); loadPricesToUI(); renderAll(); };
 
-// 글자수 6자리 제한 함수
-function limitDigits(el) {
-    if (el.value.length > 6) el.value = el.value.slice(0, 6);
-}
+function limitDigits(el) { if (el.value.length > 6) el.value = el.value.slice(0, 6); }
 
 function switchTab(tabName) {
     activeTab = tabName;
@@ -23,8 +19,6 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     if(event) event.currentTarget.classList.add('active');
     document.getElementById(`${tabName}-content`).classList.add('active');
-    
-    // 탭 이동 시 해당 탭 결과만 바로 업데이트
     if(document.getElementById('analysisResult').innerText.indexOf('분석 결과') !== -1) analyzeMarketFull();
 }
 
@@ -136,7 +130,6 @@ function analyzeMarketFull() {
     const now = new Date();
 
     myItems.forEach(mine => {
-        // [수정] 현재 활성화된 탭 아이템만 분석
         if (mine.type !== activeTab) return;
 
         let fullName = mine.type === 'cook' ? `[${mine.grade}] ${mine.name}` : `[${mine.grade}] ${mine.grade === '레어' ? '최상급 ' : (mine.grade === '언커먼' ? '신선한 ' : '')}${mine.name}`;
@@ -147,14 +140,29 @@ function analyzeMarketFull() {
         else { defaultBase = mine.grade==='레어'?10:mine.grade==='언커먼'?6:3; target = globalPrices.farm[mine.grade]; }
         
         const currentPrice = marketPrices[fullName] || defaultBase;
-        const diffHours = (new Date(mine.expiry.split('-09:00')[0] + 'T09:00:00') - now) / 3600000;
-        let decision = "보관"; let isSell = false;
+        const expiryDate = new Date(mine.expiry.split('-09:00')[0] + 'T09:00:00');
+        const diffHours = (expiryDate - now) / 3600000;
         
+        let decision = "보관"; let isSell = false;
         if(diffHours < 0) decision = "❌ 만료";
         else if(currentPrice >= target) { decision = `⚡ 즉시 판매 (${currentPrice}원)`; isSell = true; }
         else if(diffHours < 24) { if(mine.type === 'farm' || currentPrice >= defaultBase) { decision = "⏳ 기한 임박 (판매 권장)"; isSell = true; } else decision = "⚠️ 기한 임박 (원가 미달 보관)"; }
         
-        categorizedHTML[mine.type] += `<div class="result-item ${isSell ? 'sell' : ''}"><div class="res-info"><b>${mine.icon} ${mine.name} [${mine.grade}]</b><div style="font-size:0.75rem; color:var(--text-dim)">시장: ${currentPrice} / 목표: ${target}</div></div><div style="font-weight:bold; color:${isSell?'var(--success)':'white'}">${decision}</div></div>`;
+        // 남은 시간 계산 (D-Day 및 시간)
+        let timeLabel = "";
+        if (diffHours < 0) timeLabel = "기한 만료";
+        else if (diffHours >= 24) timeLabel = `D-${Math.floor(diffHours / 24)}`;
+        else timeLabel = `${Math.floor(diffHours)}시간 남음`;
+
+        categorizedHTML[mine.type] += `
+            <div class="result-item ${isSell ? 'sell' : ''}">
+                <div class="res-info">
+                    <b>${mine.icon} ${mine.name} [${mine.grade}]</b>
+                    <div class="res-meta">시장: ${currentPrice} / 목표: ${target}</div>
+                    <div class="res-meta" style="color:var(--accent)">📅 ${mine.expiry.split('-09:00')[0]} (${timeLabel})</div>
+                </div>
+                <div style="font-weight:bold; color:${isSell?'var(--success)':'white'}">${decision}</div>
+            </div>`;
     });
 
     let finalHTML = categorizedHTML[activeTab] ? `<div class="result-category-title">${categories[activeTab]}</div>${categorizedHTML[activeTab]}` : "";
