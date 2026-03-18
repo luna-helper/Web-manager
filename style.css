@@ -1,54 +1,113 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
+* { box-sizing: border-box; }
+
 :root {
     --bg-color: #0f111a; --card-bg: #1a1d2e; --panel-bg: #232741;
     --input-bg: #121421; --text-main: #ffffff; --text-dim: #9499c3;
     --accent: #7289da; --success: #43b581; --danger: #f04747;
-    --rare: #f1c40f; --uncommon: #2ecc71; --common: #b0b0b0;
+    --color-common: #b0b0b0; --color-uncommon: #00d2ff; --color-rare: #f1c40f;
+    --color-cook-normal: #ffffff; --color-cook-premium: #ff9ff3;
 }
 
-body { font-family: 'Pretendard', sans-serif; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; }
-.container { max-width: 1000px; margin: 0 auto; }
-header { text-align: center; margin-bottom: 25px; }
+body { 
+    font-family: 'Pretendard', sans-serif; 
+    background: var(--bg-color); 
+    color: var(--text-main); 
+    margin: 0; padding: 20px; 
+    line-height: 1.6; 
+    letter-spacing: -0.3px; 
+}
 
+.container { max-width: 1000px; margin: 0 auto; padding-bottom: 50px; }
+
+header h1 { text-align: center; margin-bottom: 25px; font-size: 2rem; letter-spacing: -1px; }
+
+/* 탭 스타일 */
 .main-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
-.tab-btn { padding: 12px 20px; border: none; border-radius: 10px; background: var(--panel-bg); color: var(--text-dim); cursor: pointer; font-weight: bold; }
-.tab-btn.active { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(114,137,218,0.3); }
+.tab-btn { 
+    padding: 12px 20px; border: none; border-radius: 10px; 
+    background: var(--panel-bg); color: var(--text-dim); 
+    cursor: pointer; font-weight: 700; transition: 0.2s; 
+}
+.tab-btn.active { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(114,137,218,0.4); }
 
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-.section { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-.price-setting-section { border: 1px solid var(--accent); background: linear-gradient(145deg, #1e2235, #1a1d2e); }
+.section { background: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
 
-.price-input-grid, .input-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; background: var(--panel-bg); padding: 15px; border-radius: 12px; align-items: flex-end; }
-.cook-price-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-.tier-group { display: flex; flex-direction: column; gap: 5px; }
-.tier-group span { font-size: 0.8rem; color: var(--accent); font-weight: bold; text-align: center; }
-.flex-row { display: flex; gap: 5px; }
+/* 등록 패널 */
+.input-panel { 
+    display: flex; flex-wrap: wrap; gap: 12px; 
+    background: var(--panel-bg); padding: 18px; 
+    border-radius: 15px; align-items: flex-end; 
+}
+.input-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+.input-group label { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; }
 
-.input-field { display: flex; flex-direction: column; gap: 6px; }
-.input-field label { font-size: 0.8rem; color: var(--text-dim); font-weight: bold; }
+select, input, textarea { 
+    background: var(--input-bg); border: 1px solid #3d4150; 
+    color: white; padding: 10px; border-radius: 8px; 
+    font-size: 0.9rem; width: 100%; 
+}
 
-select, input, textarea { background: var(--input-bg); border: 1px solid #3d4150; color: white; padding: 10px; border-radius: 8px; outline: none; width: 100%; box-sizing: border-box; }
-input[type="number"] { text-align: center; font-weight: bold; color: var(--rare); }
+/* 숫자 입력창 증감 버튼 삭제 (중앙 정렬용) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
 
-.category-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 15px 0; padding-bottom: 10px; border-bottom: 1px solid #333; }
-.filter-btn { background: #2f344d; color: var(--text-dim); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-.filter-btn.active { background: var(--accent); color: white; }
+.btn-primary { 
+    background: var(--accent); color: white; font-weight: bold; 
+    padding: 0 20px; height: 42px; border: none; border-radius: 8px; 
+    cursor: pointer; white-space: nowrap; 
+}
 
-.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 10px; }
-.crop-card { background: var(--panel-bg); padding: 15px; border-radius: 10px; position: relative; border-bottom: 4px solid #444; }
-.crop-card.rare, .crop-card.일품 { border-bottom-color: var(--rare); }
-.crop-card.uncommon { border-bottom-color: var(--uncommon); }
-.crop-card.expired { border-bottom-color: var(--danger); opacity: 0.6; }
+/* 필터 버튼 */
+.filter-container { display: flex; flex-wrap: wrap; gap: 6px; margin: 15px 0; }
+.filter-btn { 
+    padding: 6px 12px; border-radius: 6px; border: 1px solid #3d4150; 
+    background: var(--input-bg); color: var(--text-dim); 
+    cursor: pointer; font-size: 0.75rem; font-weight: 500; 
+}
+.filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-.crop-icon { font-size: 2rem; display: block; text-align: center; margin-bottom: 8px; }
-.delete-btn { position: absolute; top: 5px; right: 5px; background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; }
+/* 목표가 설정 레이아웃 (중앙 정렬 적용) */
+.price-input-grid { display: flex; flex-wrap: wrap; gap: 10px; background: var(--panel-bg); padding: 15px; border-radius: 12px; }
+.price-field { flex: 1; min-width: 100px; display: flex; flex-direction: column; gap: 5px; }
+.price-field label { font-size: 0.75rem; font-weight: bold; color: var(--text-dim); text-align: center; }
+.price-field input { text-align: center; font-weight: 700; color: var(--accent); }
 
-.btn-primary { background: var(--accent); color: white; font-weight: bold; height: 40px; border: none; border-radius: 8px; cursor: pointer; }
-.btn-analyze { width: 100%; padding: 15px; background: var(--success); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+.cook-price-layout { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+.tier-card { background: var(--panel-bg); padding: 12px; border-radius: 12px; flex: 1; min-width: 200px; text-align: center; }
+.tier-card h4 { margin: 0 0 10px 0; font-size: 0.85rem; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+.tier-inputs { display: flex; gap: 8px; justify-content: center; }
 
-.result-item { background: var(--panel-bg); padding: 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #444; }
-.result-item.sell { border-left-color: var(--success); background: #1a2e25; }
-.result-placeholder { text-align: center; color: var(--text-dim); padding: 30px; }
+/* 시세 분석 레이아웃 (높이 수정) */
+.market-input-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.split-textarea { height: 350px; font-size: 0.8rem; line-height: 1.5; padding: 12px; }
+.btn-analyze-full { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 10px; font-weight: 800; margin-top: 15px; cursor: pointer; }
+
+/* 아이템 카드 및 등급별 색상 복구 */
+.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.crop-card { background: var(--panel-bg); padding: 15px; border-radius: 12px; position: relative; border-bottom: 5px solid #444; text-align: center; }
+
+.grade-common { border-bottom-color: var(--color-common) !important; }
+.grade-uncommon { border-bottom-color: var(--color-uncommon) !important; }
+.grade-rare { border-bottom-color: var(--color-rare) !important; }
+.grade-cook-normal { border-bottom-color: var(--color-cook-normal) !important; }
+.grade-cook-premium { border-bottom-color: var(--color-cook-premium) !important; }
+
+.crop-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+.delete-btn { position: absolute; top: 6px; right: 6px; color: var(--danger); background: none; border: none; cursor: pointer; font-size: 1.1rem; }
+
+/* 결과창 */
+.result-category-title { font-size: 1rem; font-weight: 800; color: var(--accent); margin: 20px 0 10px 0; border-left: 4px solid var(--accent); padding-left: 10px; }
+.result-item { background: var(--panel-bg); padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
+.result-item.sell { border-left: 4px solid var(--success); background: rgba(67, 181, 129, 0.1); }
+
+footer { text-align: center; margin-top: 40px; padding: 20px; color: var(--text-dim); font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); }
+.version-tag { color: var(--accent); font-weight: 700; }
