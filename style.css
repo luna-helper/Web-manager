@@ -1,76 +1,56 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 :root {
-    --bg-color: #0f111a;
-    --card-bg: #1a1d2e;
-    --panel-bg: #232741;
-    --input-bg: #121421;
-    --text-main: #ffffff;
-    --text-dim: #9499c3;
-    --accent: #7289da;
-    --success: #43b581;
-    --danger: #f04747;
-    --rare: #f1c40f;
-    --uncommon: #2ecc71;
-    --common: #b0b0b0;
+    --bg-color: #0f111a; --card-bg: #1a1d2e; --panel-bg: #232741;
+    --input-bg: #121421; --text-main: #ffffff; --text-dim: #9499c3;
+    --accent: #7289da; --success: #43b581; --danger: #f04747;
+    --rare: #f1c40f; --uncommon: #2ecc71; --common: #b0b0b0;
 }
 
-body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px 20px; }
+body { font-family: 'Pretendard', sans-serif; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; }
 .container { max-width: 1000px; margin: 0 auto; }
-header { text-align: center; margin-bottom: 30px; }
-.subtitle { color: var(--text-dim); font-size: 0.9rem; }
+header { text-align: center; margin-bottom: 25px; }
 
-.section { background: var(--card-bg); border-radius: 20px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); }
+.main-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
+.tab-btn { padding: 12px 20px; border: none; border-radius: 10px; background: var(--panel-bg); color: var(--text-dim); cursor: pointer; font-weight: bold; }
+.tab-btn.active { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(114,137,218,0.3); }
 
-.center-header { justify-content: center !important; margin-bottom: 25px !important; }
-.main-setting-title { font-size: 1.8rem !important; color: var(--accent); font-weight: 800; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-.input-panel { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-    gap: 15px; 
-    background: var(--panel-bg); 
-    padding: 20px; 
-    border-radius: 15px; 
-    margin-bottom: 20px;
-    align-items: flex-end;
-}
-.input-field { display: flex; flex-direction: column; gap: 8px; }
-.input-field label { font-size: 0.85rem; color: var(--text-dim); font-weight: bold; }
+.section { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+.price-setting-section { border: 1px solid var(--accent); background: linear-gradient(145deg, #1e2235, #1a1d2e); }
 
-select, input, textarea { background: var(--input-bg); border: 1px solid #3d4150; color: white; padding: 12px; border-radius: 8px; outline: none; }
-input[type="date"] { height: 19px; }
+.price-input-grid, .input-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; background: var(--panel-bg); padding: 15px; border-radius: 12px; align-items: flex-end; }
+.cook-price-grid { grid-template-columns: repeat(3, 1fr); }
+.tier-group { display: flex; flex-direction: column; gap: 5px; text-align: center; }
+.tier-group span { font-size: 0.8rem; color: var(--accent); font-weight: bold; }
 
-.category-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
-.filter-btn { background: #2f344d; color: var(--text-dim); border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.input-field { display: flex; flex-direction: column; gap: 6px; }
+.input-field label { font-size: 0.8rem; color: var(--text-dim); font-weight: bold; }
+
+select, input, textarea { background: var(--input-bg); border: 1px solid #3d4150; color: white; padding: 10px; border-radius: 8px; outline: none; width: 100%; box-sizing: border-box; }
+input[type="number"] { text-align: center; font-weight: bold; color: var(--rare); }
+textarea { height: 150px; }
+
+.category-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 15px 0; padding-bottom: 10px; border-bottom: 1px solid #333; }
+.filter-btn { background: #2f344d; color: var(--text-dim); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
 .filter-btn.active { background: var(--accent); color: white; }
-.filter-btn span { margin-left: 5px; font-weight: bold; color: var(--success); }
 
-.crop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-@media (max-width: 768px) { .crop-grid { grid-template-columns: repeat(2, 1fr); } }
-
-.crop-card { background: var(--panel-bg); border-radius: 12px; padding: 20px; position: relative; border-bottom: 4px solid #444; }
-.crop-card.rare { border-bottom-color: var(--rare); }
+.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.crop-card { background: var(--panel-bg); padding: 15px; border-radius: 10px; position: relative; border-bottom: 4px solid #444; }
+.crop-card.rare, .crop-card.일품 { border-bottom-color: var(--rare); }
 .crop-card.uncommon { border-bottom-color: var(--uncommon); }
-.crop-card.common { border-bottom-color: var(--common); }
-.crop-card.expired { border-bottom-color: var(--danger); background: linear-gradient(180deg, #232741 0%, #3a1c1c 100%); }
+.crop-card.expired { border-bottom-color: var(--danger); opacity: 0.6; }
 
-.crop-icon { font-size: 2.5rem; display: block; text-align: center; margin-bottom: 10px; }
-.delete-btn { position: absolute; top: 10px; right: 10px; background: none; color: var(--danger); border: none; font-size: 1.2rem; cursor: pointer; }
+.crop-icon { font-size: 2rem; display: block; text-align: center; margin-bottom: 8px; }
+.delete-btn { position: absolute; top: 5px; right: 5px; background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; }
 
-.market-panel { display: flex; flex-direction: column; gap: 15px; }
-.guide-text { font-size: 0.85rem; color: var(--text-dim); margin: 0; }
-textarea { height: 250px; font-family: 'Courier New', monospace; line-height: 1.5; }
+.btn-primary { background: var(--accent); color: white; font-weight: bold; height: 40px; border: none; border-radius: 8px; cursor: pointer; }
+.btn-analyze { width: 100%; padding: 15px; background: var(--success); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-.btn-primary { background: var(--accent); color: white; height: 46px; font-weight: bold; }
-.btn-analyze { width: 100%; padding: 18px; font-size: 1.1rem; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-
-/* 분석 결과 아이템 스타일 수정 */
-.result-item { background: var(--panel-bg); padding: 18px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #444; }
+.result-item { background: var(--panel-bg); padding: 12px; border-radius: 8px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #444; }
 .result-item.sell { border-left-color: var(--success); background: #1a2e25; }
-.res-info { display: flex; flex-direction: column; gap: 4px; }
-.res-grade { font-size: 0.75rem; font-weight: bold; }
-.res-grade.rare { color: var(--rare); }
-.res-grade.uncommon { color: var(--uncommon); }
-.res-grade.common { color: var(--common); }
-.res-expiry { font-size: 0.7rem; color: var(--text-dim); }
+.res-info b { font-size: 0.95rem; }
+.res-expiry { font-size: 0.75rem; color: var(--text-dim); }
+.result-placeholder { text-align: center; color: var(--text-dim); padding: 30px; }
